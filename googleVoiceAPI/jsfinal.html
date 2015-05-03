@@ -1,0 +1,220 @@
+<!doctype html>
+<html>
+
+	<head>
+		<title>JS Final</title>
+
+		<script src = "Three.js"></script>
+  		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript"></script>
+
+
+	</head>
+
+	<body onload = "init()">
+
+		<div id = "main">
+			<div id = "colorDisplay">&nbsp;</div>
+
+			<div id="controls">
+				<button id="startButton">Click to Start</button>
+			</div>
+
+			<style>
+			    #controls {
+			        text-align: center;
+			    }
+			    #startButton {
+			        font-size: 16pt;
+			    }
+			    #colorDisplay {
+			        color: white;
+			        font-size: 16pt;
+			        border: 1px solid #ccc;
+			        padding: 3px;
+			        text-align: center;
+			    }
+			</style>
+		</div>
+
+
+		<script type="text/javascript">
+
+
+		    var finalTranscript = '';
+		    var recognizing = false;
+		    var cubeColor = " ";
+
+		    $(document).ready(function() {
+
+		        // check that your browser supports the API
+		        if (!('webkitSpeechRecognition' in window)) {
+		            alert("Sorry, your Browser does not support the Speech API");
+
+		        } else {
+		            // Create the recognition object and define the event handlers
+		            var recognition = new webkitSpeechRecognition();
+		            recognition.continuous = true;         // keep processing input until stopped
+		            recognition.interimResults = true;     // show interim results
+		            recognition.lang = 'en-US';           // specify the language
+
+		            recognition.onstart = function() {
+		                recognizing = true;
+		                //console.log('Speak slowly and clearly');
+		                $('#start_button').html('Click to Stop');
+		            };
+
+		            recognition.onerror = function(event) {
+		                //console.log("There was a recognition error...");
+		            };
+
+		            recognition.onend = function() {
+		                recognizing = false;
+		                $('#instructions').html('&nbsp;');
+		            };
+
+		            recognition.onresult = function(event) {
+		                var interimTranscript = '';
+
+		                // Assemble the transcript from the array of results
+		                for (var i = event.resultIndex; i < event.results.length; ++i) {
+		                    if (event.results[i].isFinal) {
+		                        finalTranscript += event.results[i][0].transcript;
+		                    } else {
+		                        interimTranscript += event.results[i][0].transcript;
+		                    }
+		                }
+		                //console.log("interim:  " + interimTranscript);
+		                console.log("final:    " + finalTranscript);
+
+		                // update the page
+		                if(finalTranscript.length > 0) {
+		                    $('#colorDisplay').html(finalTranscript);
+		                    recognition.stop();
+		                    $('#startButton').html('Click to Start Again');
+		                    recognizing = false;
+		                }
+
+		                if (finalTranscript == "red") {
+		                	cubeColor = "red";
+
+		     //     			$(function(){
+							//     $('body').css('background-color', cubeColor);
+							// });
+		                }
+		                else if(finalTranscript =="Green"){
+
+		                	cubeColor = "green";
+
+		     //     			$(function(){
+							//     $('body').css('background-color', cubeColor);
+							// });
+		                }
+
+		                else if(finalTranscript == "blue"){
+		                	cubeColor = "blue";
+
+		     //     			$(function(){
+							//     $('body').css('background-color', cubeColor);
+							// });
+		                }
+
+		                console.log("cubecolor is:"+cubeColor);
+
+		               	$(function(){
+							$('body').css('background-color', cubeColor);
+						});
+
+
+		            };
+
+
+
+		            $("#startButton").click(function(e) {
+		                e.preventDefault();
+
+
+		                if (recognizing) {
+		                    recognition.stop();
+		                    $('#startButton').html('Click to Start Again');
+		                    recognizing = false;
+		                } else {
+		                    finalTranscript = '';
+		                    // Request access to the User's microphone and Start recognizing voice input
+		                    recognition.start();
+		                    //console.log('Allow the browser to use your Microphone');
+		                    $('#startButton').html('waiting');
+		                    $('#colorDisplay').html('&nbsp;');
+		                }
+		            });
+		        }
+		    });
+
+			// $(function(){
+			//     $('body').css('background-color', cubeColor);
+			// });
+
+
+
+
+
+		//-----------------------------------------------------------------------------------------------------------------------------
+
+			//define the variables will be used for 3d cube
+			var camera, scene, renderer, cube, material, mesh, dLight;
+
+			//init function
+			function init(){
+
+				//create scene and empty camera
+				scene = new THREE.Scene();
+				camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 1, 10000);
+				camera.position.z = 1000;
+
+				//add camrea into scene
+				scene.add(camera);
+
+				//create a cube 
+				cube = new THREE.CubeGeometry(300, 300, 300);
+				material = new THREE.MeshLambertMaterial();
+
+				// create a mesh with cube and material
+				mesh = new THREE.Mesh(cube,material);
+
+				//change colors in real-time
+				mesh.material.color.setHex(0x98AFC7);
+				scene.add(mesh);
+
+				// add directional light on the cube
+				dLight = new THREE.DirectionalLight(0xffffff);
+				dLight.position.set(0, 1, 0);
+				
+
+				scene.add(dLight);
+
+				// render the cube in order to show on the web page
+				renderer = new THREE.CanvasRenderer({ alpha: true });
+				renderer.setClearColor(0x000000, 0);
+				renderer.setSize(window.innerWidth, window.innerHeight);
+
+				document.body.appendChild(renderer.domElement);
+
+				//call the animate function
+				animate();
+
+			}
+
+			function animate(){
+
+				mesh.material.colorsNeedUpdate = true;
+				//loop the anmiation
+				requestAnimationFrame(animate);
+
+				mesh.rotation.x += 0.02;
+				mesh.rotation.y += 0.02;
+				renderer.render(scene, camera); 
+
+			}
+		</script> 
+
+	</body>
+</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+	<link rel="stylesheet" href="css/paratest.css">
+
+</head>
+
+<body>
+	<div id="container" class ="container">
+	<ul id="scene">
+	  <li class="layer" data-depth="0.00"><img src="letter1.png"></li>
+	  <li class="layer" data-depth="0.20"><img src="letter2.png"></li>
+	  <li class="layer" data-depth="0.40"><img src="letter3.png"></li>
+	  <li class="layer" data-depth="0.60"><img src="letter4.png"></li>
+	  <li class="layer" data-depth="0.80"><img src="letter5.png"></li>
+	</ul>
+
+	<script src="../deploy/parallax.js"></script>
+	<script>
+		var scene = document.getElementById('scene');
+		var parallax = new Parallax(scene);
+
+	</script>
+
+</body>
+
+</html>
